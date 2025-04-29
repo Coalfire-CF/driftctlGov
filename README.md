@@ -2,7 +2,7 @@
 This repository is forked from upstream driftctl project with some minor changes to allow it to work correctly for GovCloud
 
 ## Installation
-Official docs direct you to only download the binary from releases.
+Official docs direct you to only download the binary from releases.  We're using the Makefile to build the binary.
 
 - Install "go" on your computer.
   - Use whichever method is appropriate for your OS.  I use WSL2 => Ubuntu on Windows, so I installed from apt.
