@@ -1,8 +1,37 @@
+# driftctl
+This repository is forked from upstream driftctl project with some minor changes to allow it to work correctly for GovCloud
+
+## Installation
+Official docs direct you to only download the binary from releases.
+
+- Install "go" on your computer.
+  - Use whichever method is appropriate for your OS.  I use WSL2 => Ubuntu on Windows, so I installed from apt.
+- cd into the root of this repository
+- Run `make simple-build`
+  - You can attempt to run `make build`, but it didn't work for me.  This may have a lot to do with how go is installed on your system and the version.
+- cd into "bin"
+- chmod on driftctl binary to allow execute permissions.
+- Copy binary into your PATH, I used `/usr/local/bin`
+
+## Usage
+https://docs.driftctl.com/0.40.0/usage
+
+### Example
+This is an example command I ran against a sandbox account (GovCloud), my user has AdministratorAccess:
+```bash
+AWS_PROFILE=pak-test-mgmt cpulimit -f -l 10 -- driftctl scan --from tfstate+s3://coalforge-us-gov-west-1-tf-state/**/*.tfstate --from tfstate+s3://pak-test-infra-us-gov-west-1-tf-state/**/*.tfstate --filter "!(Type=='aws_cloudfront_distribution')" --tf-provider-version 5.96.0
+```
+
+- I use `cpulimit` to limit the number of threads used by driftctl to avoid hitting AWS API limits.
+  - https://stackoverflow.com/questions/75441891/driftctl-throttlingexception-rate-exceeded-on-aws
+- Running against GovCloud leads to errors because driftctl tries to scan against non-existent resources like CloudFront.
+  - I use `--filter "!(Type=='aws_cloudfront_distribution')"` to have it ignore CloudFront.
+  - **This is the primary change made to this fork.**  The upstream appears to completely ignore this filtering.
+- driftctl uses a default old AWS Provider version by default, I override with the latest version using `--tf-provider-version 5.96.0`
+- You can use a glob pattern to simply provide the bucket name where your Terraform state is kept.
+  - You can provide multiple bucket names if your state is stored in different places.
+
 ## This project is now in maintenance mode. We cannot promise to review contributions. Please feel free to fork the project to apply any changes you might want to make.
-
-
-
-
 
 <p align="center">
   <img width="200" src="https://docs.driftctl.com/img/driftctl_dark.svg" alt="driftctl">
